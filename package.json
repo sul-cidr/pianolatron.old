@@ -10,7 +10,10 @@
     "build": "parcel build index.html --detailed-report",
     "build:production": "rm -rf dist && parcel build --no-cache --no-source-maps --public-url '.' index.html && yarn postbuild",
     "postbuild": "ncp src/assets/favicon.ico dist/favicon.ico",
-    "lint": "eslint src/ --ext jsx --ext js"
+    "lint": "eslint src/ --ext jsx --ext js",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "coverage": "jest --passWithNoTests --coverage"
   },
   "dependencies": {
     "prop-types": "^15.7.2",
@@ -21,6 +24,7 @@
     "@babel/core": "^7.11.6",
     "@babel/preset-env": "^7.11.5",
     "@babel/preset-react": "^7.10.4",
+    "babel-jest": "^26.3.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.4",
     "eslint": "^7.8.1",
@@ -30,8 +34,26 @@
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-hooks": "^4.1.1",
+    "jest": "^26.4.2",
     "ncp": "^2.0.0",
     "parcel": "^2.0.0-beta.1",
     "sass": "^1.26.10"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "./setupTests.js"
+    ],
+    "roots": [
+      "./__tests__/",
+      "src/"
+    ],
+    "coverageDirectory": "./coverage/",
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!**/node_modules/**"
+    ],
+    "coveragePathIgnorePatterns": [
+      "src/index.js"
+    ]
   }
 }
