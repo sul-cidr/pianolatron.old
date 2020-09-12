@@ -1,0 +1,36 @@
+{
+  "name": "pianolatron",
+  "author": "Simon Wiles",
+  "description": "Pianolatron!",
+  "version": "0.1.0",
+  "main": "dist/index.html",
+  "license": "MIT",
+  "scripts": {
+    "dev": "parcel --no-cache index.html",
+    "build": "parcel build index.html --detailed-report",
+    "build:production": "rm -rf dist && parcel build --no-cache --no-source-maps --public-url '.' index.html",
+    "lint": "eslint src/ --ext jsx --ext js"
+  },
+  "dependencies": {
+    "prop-types": "^15.7.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
+    "@babel/preset-react": "^7.10.4",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.4",
+    "eslint": "^7.8.1",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-react": "^7.20.6",
+    "eslint-plugin-react-hooks": "^4.1.1",
+    "ncp": "^2.0.0",
+    "parcel": "^2.0.0-beta.1",
+    "sass": "^1.26.10"
+  }
+}
