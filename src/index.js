@@ -3,6 +3,8 @@ import ReactDOM from "react-dom";
 
 import MidiPlayer from "midi-player-js";
 
+import ScoreDetails from "./components/ScoreDetails";
+
 import mididata from "./assets/mididata.json";
 
 const App = () => {
@@ -40,7 +42,12 @@ const App = () => {
     MidiSamplePlayer.loadDataUri(mididata.magic_fire);
   }, []);
 
-  return <h3>Pianolatron Demonstration</h3>;
+  return (
+    <>
+      <h3>Pianolatron Demonstration</h3>
+      <ScoreDetails rollMetadata={rollMetadata} />
+    </>
+  );
 };
 
 ReactDOM.render(<App />, document.querySelector("#root"));
