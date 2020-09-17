@@ -89,7 +89,6 @@ const useMidiSamplePlayer = (mididata) => {
             } catch (ex) {
               console.log(
                 "COULDN'T STOP NOTE, PROBABLY DUE TO WEIRD ADSR VALUES, RESETTING",
-                ex,
               );
 
               adsr = ADSR_SAMPLE_DEFAULTS;

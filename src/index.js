@@ -9,10 +9,14 @@ import ScoreDetails from "./components/ScoreDetails";
 import mididata from "./assets/mididata.json";
 
 const App = () => {
-  const { rollMetadata, playPauseMidiFile, stopMidiFile } = useMidiSamplePlayer(
-    mididata.mozart_rondo_alla_turca,
-  );
-
+  const {
+    rollMetadata,
+    playPauseMidiFile,
+    stopMidiFile,
+    sliderTempo,
+    updateSliderTempo,
+  } = useMidiSamplePlayer(mididata.mozart_rondo_alla_turca);
+  console.log("rerendering App");
   return (
     <>
       <h3>Pianolatron Demonstration</h3>
@@ -20,6 +24,8 @@ const App = () => {
       <ScoreControls
         playPauseMidiFile={playPauseMidiFile}
         stopMidiFile={stopMidiFile}
+        sliderTempo={sliderTempo}
+        updateSliderTempo={updateSliderTempo}
       />
     </>
   );
