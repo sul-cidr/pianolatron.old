@@ -10,7 +10,7 @@ import mididata from "./assets/mididata.json";
 
 const App = () => {
   const { rollMetadata, playPauseMidiFile, stopMidiFile } = useMidiSamplePlayer(
-    mididata.magic_fire,
+    mididata.mozart_rondo_alla_turca,
   );
 
   return (
