@@ -12,6 +12,13 @@ const ADSR_SAMPLE_DEFAULTS = {
   release: 0.3,
 };
 
+const decodeHtmlEntities = (string) =>
+  string
+    .replace(/&#(\d+);/g, (match, num) => String.fromCodePoint(num))
+    .replace(/&#x([A-Za-z0-9]+);/g, (match, num) =>
+      String.fromCodePoint(parseInt(num, 16)),
+    );
+
 const useMidiSamplePlayer = (mididata) => {
   const [midiSamplePlayer, setMidiSamplePlayer] = useState();
   const [rollMetadata, setRollMetadata] = useState({});
@@ -51,7 +58,10 @@ const useMidiSamplePlayer = (mididata) => {
           metadataTrack
             .filter((event) => event.name === "Text Event")
             .map((event) =>
-              event.string.match(/^@([^:]*):[\t\s]*(.*)$/).slice(1, 3),
+              event.string
+                .match(/^@([^:]*):[\t\s]*(.*)$/)
+                .slice(1, 3)
+                .map((value) => decodeHtmlEntities(value)),
             ),
         ),
       );
