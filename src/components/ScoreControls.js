@@ -26,8 +26,7 @@ const ScoreControls = ({
           min="0"
           max="180"
           value={uiTempo}
-          className="slider"
-          id="tempoSlider"
+          name="tempo"
           onChange={({ target: { value } }) => {
             setUiTempo(value);
             updateSliderTempo(value);
@@ -43,8 +42,6 @@ const ScoreControls = ({
           max="4"
           step=".1"
           value={uiMasterVolume}
-          className="slider"
-          id="masterVolumeSlider"
           name="volume"
           onChange={({ target: { value } }) => {
             setUiMasterVolume(value);
