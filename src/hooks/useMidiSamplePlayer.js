@@ -28,6 +28,10 @@ const useMidiSamplePlayer = (mididata) => {
   const sustainedNotes = [];
 
   let adsr = ADSR_SAMPLE_DEFAULTS;
+  let baseTempo;
+  let tempoRatio = 1.0; // To keep track of gradual roll acceleration
+  let playbackTempo = 0.0; // Combines slider and tempo ratio
+  let sliderTempo = 60.0;
 
   const volumeRatio = 1.0;
   const leftVolumeRatio = 1.0;
@@ -65,87 +69,100 @@ const useMidiSamplePlayer = (mididata) => {
             ),
         ),
       );
+
+      // set base tempo to the value of event.data for the event with the lowest value
+      //  for event.tick where event.name is "Set Tempo"
+      baseTempo = Object.values(
+        metadataTrack.filter((event) => event.name === "Set Tempo"),
+      ).reduce((prev, curr) => (prev.tick < curr.tick ? prev : curr)).data;
     });
 
-    _midiSamplePlayer.on("midiEvent", ({ name, noteNumber, velocity }) => {
-      if (name === "Note on") {
-        if (velocity === 0) {
-          // Note off
-          if (
-            noteNumber in activeAudioNodes &&
-            !sustainedNotes.includes(noteNumber)
-          ) {
-            try {
-              activeAudioNodes[noteNumber].stop();
-            } catch (ex) {
-              console.log(
-                "COULDN'T STOP NOTE, PROBABLY DUE TO WEIRD ADSR VALUES, RESETTING",
-              );
+    _midiSamplePlayer.on(
+      "midiEvent",
+      ({ name, data, noteNumber, velocity }) => {
+        if (name === "Note on") {
+          if (velocity === 0) {
+            // Note off
+            if (
+              noteNumber in activeAudioNodes &&
+              !sustainedNotes.includes(noteNumber)
+            ) {
+              try {
+                activeAudioNodes[noteNumber].stop();
+              } catch (ex) {
+                console.log(
+                  "COULDN'T STOP NOTE, PROBABLY DUE TO WEIRD ADSR VALUES, RESETTING",
+                );
 
-              adsr = ADSR_SAMPLE_DEFAULTS;
+                adsr = ADSR_SAMPLE_DEFAULTS;
+              }
+              // activeAudioNodes[noteNumber] = null;
+              // delete activeAudioNodes[noteNumber];
             }
-            // activeAudioNodes[noteNumber] = null;
-            // delete activeAudioNodes[noteNumber];
-          }
-          // remove every occurrence of noteNumber in activeNotes
-          while (activeNotes.includes(noteNumber)) {
-            activeNotes.splice(activeNotes.indexOf(noteNumber), 1);
-          }
-        } else {
-          // Note on
-          if (sustainedNotes.includes(noteNumber)) {
+            // remove every occurrence of noteNumber in activeNotes
+            while (activeNotes.includes(noteNumber)) {
+              activeNotes.splice(activeNotes.indexOf(noteNumber), 1);
+            }
+          } else {
+            // Note on
+            if (sustainedNotes.includes(noteNumber)) {
+              try {
+                activeAudioNodes[noteNumber].stop();
+              } catch (ex) {
+                console.log(
+                  "Tried and failed to stop sustained note being re-touched",
+                  noteNumber,
+                );
+              }
+              activeAudioNodes[noteNumber] = null;
+            }
+
+            let updatedVolume = (velocity / 100) * volumeRatio;
+            if (softPedalOn) {
+              updatedVolume *= SOFT_PEDAL_RATIO;
+            }
+            if (noteNumber < panBoundary) {
+              updatedVolume *= leftVolumeRatio;
+            } else if (noteNumber >= panBoundary) {
+              updatedVolume *= rightVolumeRatio;
+            }
+
             try {
-              activeAudioNodes[noteNumber].stop();
-            } catch (ex) {
-              console.log(
-                "Tried and failed to stop sustained note being re-touched",
+              activeAudioNodes[noteNumber] = instrument.play(
                 noteNumber,
+                audioContext.currentTime,
+                {
+                  gain: updatedVolume,
+                  adsr,
+                },
+              );
+            } catch (ex) {
+              // Get rid of this eventually
+              console.log("IMPOSSIBLE ADSR VALUES FOR THIS NOTE, RESETTING");
+              adsr = ADSR_SAMPLE_DEFAULTS;
+              activeAudioNodes[noteNumber] = instrument.play(
+                noteNumber,
+                audioContext.currentTime,
+                {
+                  gain: updatedVolume,
+                  adsr,
+                },
               );
             }
-            activeAudioNodes[noteNumber] = null;
+            if (sustainPedalOn && !sustainedNotes.includes(noteNumber)) {
+              sustainedNotes.push(noteNumber);
+            }
+            if (!activeNotes.includes(noteNumber)) {
+              activeNotes.push(noteNumber);
+            }
           }
-
-          let updatedVolume = (velocity / 100) * volumeRatio;
-          if (softPedalOn) {
-            updatedVolume *= SOFT_PEDAL_RATIO;
-          }
-          if (noteNumber < panBoundary) {
-            updatedVolume *= leftVolumeRatio;
-          } else if (noteNumber >= panBoundary) {
-            updatedVolume *= rightVolumeRatio;
-          }
-
-          try {
-            activeAudioNodes[noteNumber] = instrument.play(
-              noteNumber,
-              audioContext.currentTime,
-              {
-                gain: updatedVolume,
-                adsr,
-              },
-            );
-          } catch (ex) {
-            // Get rid of this eventually
-            console.log("IMPOSSIBLE ADSR VALUES FOR THIS NOTE, RESETTING");
-            adsr = ADSR_SAMPLE_DEFAULTS;
-            activeAudioNodes[noteNumber] = instrument.play(
-              noteNumber,
-              audioContext.currentTime,
-              {
-                gain: updatedVolume,
-                adsr,
-              },
-            );
-          }
-          if (sustainPedalOn && !sustainedNotes.includes(noteNumber)) {
-            sustainedNotes.push(noteNumber);
-          }
-          if (!activeNotes.includes(noteNumber)) {
-            activeNotes.push(noteNumber);
-          }
+        } else if (name === "Set Tempo") {
+          tempoRatio = 1 + (data - baseTempo) / baseTempo;
+          playbackTempo = sliderTempo * tempoRatio;
+          _midiSamplePlayer.setTempo(playbackTempo);
         }
-      }
-    });
+      },
+    );
     _midiSamplePlayer.loadDataUri(mididata);
     setMidiSamplePlayer(_midiSamplePlayer);
   };
