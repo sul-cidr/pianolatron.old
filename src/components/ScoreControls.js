@@ -6,8 +6,11 @@ const ScoreControls = ({
   stopMidiFile,
   sliderTempo,
   updateSliderTempo,
+  volumeRatio,
+  updateVolumeRatio,
 }) => {
   const [uiTempo, setUiTempo] = useState(sliderTempo);
+  const [uiMasterVolume, setUiMasterVolume] = useState(volumeRatio);
   return (
     <div id="score-controls">
       <button type="button" id="pause" onClick={playPauseMidiFile}>
@@ -32,6 +35,24 @@ const ScoreControls = ({
         />
         {uiTempo} bpm
       </div>
+      <div>
+        Master Volume:
+        <input
+          type="range"
+          min="0"
+          max="4"
+          step=".1"
+          value={uiMasterVolume}
+          className="slider"
+          id="masterVolumeSlider"
+          name="volume"
+          onChange={({ target: { value } }) => {
+            setUiMasterVolume(value);
+            updateVolumeRatio(value);
+          }}
+        />
+        {uiMasterVolume}
+      </div>
     </div>
   );
 };
@@ -41,6 +62,8 @@ ScoreControls.propTypes = {
   stopMidiFile: PropTypes.func.isRequired,
   sliderTempo: PropTypes.number.isRequired,
   updateSliderTempo: PropTypes.func.isRequired,
+  volumeRatio: PropTypes.number.isRequired,
+  updateVolumeRatio: PropTypes.func.isRequired,
 };
 
 export default ScoreControls;

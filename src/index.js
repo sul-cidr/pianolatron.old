@@ -15,6 +15,8 @@ const App = () => {
     stopMidiFile,
     sliderTempo,
     updateSliderTempo,
+    volumeRatio,
+    updateVolumeRatio,
   } = useMidiSamplePlayer(mididata.mozart_rondo_alla_turca);
   console.log("rerendering App");
   return (
@@ -26,6 +28,8 @@ const App = () => {
         stopMidiFile={stopMidiFile}
         sliderTempo={sliderTempo}
         updateSliderTempo={updateSliderTempo}
+        volumeRatio={volumeRatio}
+        updateVolumeRatio={updateVolumeRatio}
       />
     </>
   );
