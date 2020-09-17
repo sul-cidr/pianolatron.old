@@ -7,7 +7,7 @@ const ScoreControls = ({
   sliderTempo,
   updateSliderTempo,
 }) => {
-  const [uiSliderTempo, setUiSliderTempo] = useState(sliderTempo);
+  const [uiTempo, setUiTempo] = useState(sliderTempo);
   return (
     <div id="score-controls">
       <button type="button" id="pause" onClick={playPauseMidiFile}>
@@ -22,15 +22,15 @@ const ScoreControls = ({
           type="range"
           min="0"
           max="180"
-          value={uiSliderTempo}
+          value={uiTempo}
           className="slider"
           id="tempoSlider"
           onChange={({ target: { value } }) => {
-            setUiSliderTempo(value);
+            setUiTempo(value);
             updateSliderTempo(value);
           }}
         />
-        {uiSliderTempo} bpm
+        {uiTempo} bpm
       </div>
     </div>
   );
