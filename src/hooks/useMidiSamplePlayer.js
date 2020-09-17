@@ -30,7 +30,7 @@ let baseTempo;
 let tempoRatio = 1.0; // To keep track of gradual roll acceleration
 let sliderTempo = 60.0;
 
-const volumeRatio = 1.0;
+let volumeRatio = 1.0;
 const leftVolumeRatio = 1.0;
 const rightVolumeRatio = 1.0;
 const sustainPedalOn = false;
@@ -186,6 +186,10 @@ const useMidiSamplePlayer = (mididata) => {
     sliderTempo = _sliderTempo;
   };
 
+  const updateVolumeRatio = (_volumeRatio) => {
+    volumeRatio = _volumeRatio;
+  };
+
   useEffect(() => {
     const AudioContext =
       window.AudioContext || window.webkitAudioContext || false;
@@ -207,6 +211,8 @@ const useMidiSamplePlayer = (mididata) => {
     stopMidiFile,
     sliderTempo,
     updateSliderTempo,
+    volumeRatio,
+    updateVolumeRatio,
   };
 };
 
